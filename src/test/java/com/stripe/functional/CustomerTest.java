@@ -1,6 +1,7 @@
 package com.stripe.functional;
 
 import com.google.common.collect.ImmutableMap;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import com.stripe.BaseStripeFunctionalTest;
 import com.stripe.Stripe;
 import com.stripe.exception.InvalidRequestException;
@@ -30,9 +31,10 @@ public class CustomerTest extends BaseStripeFunctionalTest {
     public void testCustomerCreate() throws StripeException {
         Customer customer = Customer.create(defaultCustomerParams, supportedRequestOptions);
         assertEquals(customer.getDescription(), "J Bindings Customer");
-        List<Card> customerCards = customer.getCards().getData();
-        assertEquals(1, customerCards.size());
-        assertEquals("4242", customerCards.get(0).getLast4());
+        List<ExternalAccount> customerSources = customer.getSources().getData();
+        assertEquals(1, customerSources.size());
+		assertThat(customerSources.get(0), instanceOf(Card.class));
+        assertEquals("4242", ((Card)customerSources.get(0)).getLast4());
     }
 
     @Test
